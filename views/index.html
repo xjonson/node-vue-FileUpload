@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>文件上传</title>
+  <style>
+    .upload-img {
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <input type="file" @change="fileChange">
+    <br>
+    <input type="file" @change="filesChange" multiple>
+    <br>
+    <button class="submit" @click="handleUpload">上传</button>
+    <br>
+    <div v-if="imgSrc">
+      <p>服务器返回的图片：</p>
+      <img :src="imgSrc" class="upload-img">
+    </div>
+  </div>
+</body>
+<!-- script -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+  const app = new Vue({
+    el: '#app',
+    data() {
+      return {
+        files: [],
+        imgSrc: '',
+      }
+    },
+    methods: {
+      // 单个文件上传
+      fileChange(e) {
+        const file = e.target.files[0]
+        console.log(file);
+
+        this.files = []
+        this.files.push(file)
+        console.log(this.files);
+
+      },
+      // 多个文件上传
+      filesChange(e) {
+
+      },
+      // 上传
+      handleUpload() {
+        if (!this.files[0]) return
+        let params = new FormData()
+        const config = {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+        params.append('files', this.files[0])
+        axios.post('/upload', params, config).then(res => {
+          console.log(res.data);
+
+          this.imgSrc = `http://localhost:4000/${res.data.data}`
+        }).catch(err => {
+
+        })
+      }
+    },
+
+  })
+</script>
+
+</html>
